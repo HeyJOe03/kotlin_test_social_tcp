@@ -2,6 +2,9 @@ package org.altervista.carminati.chat_app_first
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -16,10 +19,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        //val btn_send = findViewById<Button>(R.id.btn_send)
-        //val txt_message = findViewById<TextView>(R.id.txt_message)
-        //val edt_message = findViewById<EditText>(R.id.edt_message)
 
         try{
             socket = IO.socket("http://192.168.1.139:3000")
@@ -39,8 +38,8 @@ class MainActivity : AppCompatActivity() {
             val message = edt_message.text.toString()
             if(message != "") {
                 val json = JSONObject()
-                json.put("sender","Android APP")
-                json.put("to","server")
+                json.put("sender",edt_username.text.toString())
+                json.put("to",edt_to.text.toString())
                 json.put("message",message)
                 socket.emit("message",json)
             } else {
@@ -49,6 +48,20 @@ class MainActivity : AppCompatActivity() {
             edt_message.text.clear()
         }
 
+        btn_join_chat.setOnClickListener{
+            if(edt_username.text.toString() != ""){
+
+                socket.emit("join_chat", edt_username.text.toString())
+
+                edt_to.visibility = EditText.VISIBLE
+                edt_message.visibility = EditText.VISIBLE
+                btn_send.visibility = Button.VISIBLE
+                txt_message.visibility = TextView.VISIBLE
+                btn_join_chat.visibility = Button.GONE
+
+                edt_username.keyListener = null
+            }
+        }
 
         socket.on("message"){
             args ->

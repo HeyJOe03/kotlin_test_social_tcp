@@ -3,9 +3,11 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const ArrayList = require('arraylist')
 
-function User(username,address){
-    this.username = username
-    this.address = address
+class User{
+    constructor(username,address){
+        this.username = username
+        this.address = address
+    }
 }
 
 let users = new ArrayList()
@@ -16,22 +18,38 @@ app.get('/',(req,res) => {
 
 io.on('connection',(socket) => {
 
-
+    let element_me
     //console.log('new user has connected: ' + socket.id)
 
     //io.to(socket.id).emit('message',{sender:"server",to:socket.id,message:"hello client"})
 
     socket.on('join_chat', (username) => {
-        users.add(new User(username,socket.id))
+        element_me = new User(username,socket.id)
+        users.add(element_me)
+
+        //TODO: aggiungere controllo sull'unicità dell'id
+
         io.to(socket.id).emit('message',{"sender": "server","to":socket.id,"message":"your socket: " + socket.id})
     })
 
-    socket.on('message', (data) => {
-        console.log(data)
+    socket.on('message', ({sender,to,message}) => {
+        console.log({sender,to,message})
+
+        toSocket = users.find(e => {
+            return e.username == to
+        })[0].address
+
+        console.log(toSocket)
+
+        io.to(toSocket).emit('message',{sender,to,message})
     })
 
     socket.on('disconnect', () => {
         console.log(socket.id + " left the chat")
+
+        //FIXME: to check
+
+        users.removeElement(element_me)
     })
 
 
