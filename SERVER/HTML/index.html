@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Simple chat app</title>
+</head>
+<script src='/socket.io/socket.io.js'></script>
+<script>
+    let socket = io()
+    socket.on('message',(data) => {
+        document.writeln(data.message + " " + data.sender + " " + data.to)
+    })
+</script>
+<body>
+    <h1>HELLO WORLD</h1>
+</body>
+</html>
