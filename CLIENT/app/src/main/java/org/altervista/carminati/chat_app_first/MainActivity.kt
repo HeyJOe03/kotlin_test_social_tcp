@@ -9,7 +9,7 @@ import android.widget.Toast
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject
-import kotlinx.android.synthetic.main.activity_main.*
+//import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity() {
@@ -20,11 +20,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val btn_send = findViewById<Button>(R.id.btn_send)
+        val btn_join_chat = findViewById<Button>(R.id.btn_join_chat)
+        val edt_message = findViewById<EditText>(R.id.edt_message)
+        val edt_to = findViewById<EditText>(R.id.edt_to)
+        val edt_username = findViewById<EditText>(R.id.edt_username)
+        val txt_message = findViewById<TextView>(R.id.txt_message)
+
         try{
             socket = IO.socket("http://192.168.1.139:3000")
             socket.on(Socket.EVENT_CONNECT){
                 runOnUiThread {
                     Toast.makeText(this@MainActivity, "Connected", Toast.LENGTH_SHORT).show()
+                    btn_join_chat.text = socket.id()
                 }
             }
             socket.connect()
