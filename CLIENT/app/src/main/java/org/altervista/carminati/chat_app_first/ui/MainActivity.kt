@@ -16,9 +16,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val test = findViewById<TextView>(R.id.test)
-        test.text = "it is working"
-
         /*
         val btn_send = findViewById<Button>(R.id.btn_send)
         val btn_join_chat = findViewById<Button>(R.id.btn_join_chat)
