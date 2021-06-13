@@ -1,16 +1,12 @@
-package org.altervista.carminati.chat_app_first
+package org.altervista.carminati.chat_app_first.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
-import io.socket.client.IO
 import io.socket.client.Socket
-import org.json.JSONObject
+import org.altervista.carminati.chat_app_first.R
 //import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.StringBuilder
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +16,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val test = findViewById<TextView>(R.id.test)
+        test.text = "it is working"
+
+        /*
         val btn_send = findViewById<Button>(R.id.btn_send)
         val btn_join_chat = findViewById<Button>(R.id.btn_join_chat)
         val edt_message = findViewById<EditText>(R.id.edt_message)
@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
                 txt_message.text = builder.toString()
             }
         }
+         */
 
     }
 }
