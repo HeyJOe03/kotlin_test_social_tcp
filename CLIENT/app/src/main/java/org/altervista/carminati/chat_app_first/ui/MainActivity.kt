@@ -6,6 +6,10 @@ import android.widget.EditText
 import android.widget.TextView
 import io.socket.client.Socket
 import org.altervista.carminati.chat_app_first.R
+import org.altervista.carminati.chat_app_first.data.Message
+import org.altervista.carminati.chat_app_first.utils.Constants.RECEIVE_ID
+import org.altervista.carminati.chat_app_first.utils.Constants.SEND_ID
+
 //import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -15,6 +19,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val a = MessagingAdapter()
+        a.insertMessage(Message("hello",SEND_ID,System.currentTimeMillis().toString()))
+        a.insertMessage(Message("ciao", RECEIVE_ID,System.currentTimeMillis().toString()))
+        a.insertMessage(Message("come stai",SEND_ID,System.currentTimeMillis().toString()))
+        a.insertMessage(Message("mia mal te?",RECEIVE_ID,System.currentTimeMillis().toString()))
+        a.insertMessage(Message("e dai mei che negot",SEND_ID,System.currentTimeMillis().toString()))
+
 
         /*
         val btn_send = findViewById<Button>(R.id.btn_send)
