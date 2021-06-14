@@ -19,7 +19,7 @@ app.get('/',(req,res) => {
 io.on('connection',(socket) => {
 
     let element_me
-    //console.log('new user has connected: ' + socket.id)
+    console.log('new user has connected: ' + socket.id)
 
     //io.to(socket.id).emit('message',{sender:"server",to:socket.id,message:"hello client"})
 
