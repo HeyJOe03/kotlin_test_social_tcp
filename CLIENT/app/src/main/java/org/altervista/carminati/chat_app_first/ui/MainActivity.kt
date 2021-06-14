@@ -3,30 +3,35 @@ package org.altervista.carminati.chat_app_first.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import io.socket.client.Socket
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.*
 import org.altervista.carminati.chat_app_first.R
 import org.altervista.carminati.chat_app_first.data.Message
 import org.altervista.carminati.chat_app_first.utils.Constants.RECEIVE_ID
 import org.altervista.carminati.chat_app_first.utils.Constants.SEND_ID
+import org.altervista.carminati.chat_app_first.utils.Time
 
 //import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var socket : Socket
+    private lateinit var adapter: MessagingAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val a = MessagingAdapter()
-        a.insertMessage(Message("hello",SEND_ID,System.currentTimeMillis().toString()))
-        a.insertMessage(Message("ciao", RECEIVE_ID,System.currentTimeMillis().toString()))
-        a.insertMessage(Message("come stai",SEND_ID,System.currentTimeMillis().toString()))
-        a.insertMessage(Message("mia mal te?",RECEIVE_ID,System.currentTimeMillis().toString()))
-        a.insertMessage(Message("e dai mei che negot",SEND_ID,System.currentTimeMillis().toString()))
+        recycleView()
 
+        customMessage("hello")
+        customMessage("how are you?")
+
+        btn_send.setOnClickListener{sendMessage()}
 
         /*
         val btn_send = findViewById<Button>(R.id.btn_send)
@@ -100,4 +105,37 @@ class MainActivity : AppCompatActivity() {
          */
 
     }
+
+    private fun customMessage(message: String){
+        GlobalScope.launch {
+            delay(1000)
+            withContext(Dispatchers.Main){
+                val timestamp = Time.timeStamp()
+                adapter.insertMessage(Message(message, RECEIVE_ID,timestamp))
+
+                rv_messages.scrollToPosition(adapter.itemCount - 1)
+            }
+
+        }
+    }
+
+    private fun recycleView(){
+        adapter = MessagingAdapter()
+        rv_messages.adapter = adapter
+        rv_messages.layoutManager = LinearLayoutManager(applicationContext)
+    }
+
+    private fun sendMessage(){
+        val message = et_message.text.toString()
+        val timeStamp = Time.timeStamp()
+
+        if(message.isNotEmpty()){
+            et_message.setText("")
+
+            adapter.insertMessage(Message(message, SEND_ID,timeStamp))
+
+            rv_messages.scrollToPosition(adapter.itemCount-1)
+        }
+    }
+
 }
