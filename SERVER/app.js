@@ -44,7 +44,7 @@ io.on('connection',(socket) => {
 
         // io.to(toSocket).emit('message',{sender,to,message})
 
-        io.broadcast.emit({sender,to,message})
+        socket.broadcast.emit("message",{sender,to,message})
     })
 
     socket.on('disconnect', () => {

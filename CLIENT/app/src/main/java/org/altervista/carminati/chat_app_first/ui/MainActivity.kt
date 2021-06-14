@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import io.socket.client.IO
 import io.socket.client.Socket
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
@@ -15,7 +17,8 @@ import org.altervista.carminati.chat_app_first.utils.Constants.RECEIVE_ID
 import org.altervista.carminati.chat_app_first.utils.Constants.SEND_ID
 import org.altervista.carminati.chat_app_first.utils.Time
 
-//import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,27 +29,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        recycleView()
-
-        customMessage("hello")
-        customMessage("how are you?")
-
-        btn_send.setOnClickListener{sendMessage()}
-
-        /*
-        val btn_send = findViewById<Button>(R.id.btn_send)
-        val btn_join_chat = findViewById<Button>(R.id.btn_join_chat)
-        val edt_message = findViewById<EditText>(R.id.edt_message)
-        val edt_to = findViewById<EditText>(R.id.edt_to)
-        val edt_username = findViewById<EditText>(R.id.edt_username)
-        val txt_message = findViewById<TextView>(R.id.txt_message)
+        recycleView()   //set the recycleView
+        btn_send.setOnClickListener{sendMessage()} //set the function to send messages
 
         try{
             socket = IO.socket("http://192.168.1.139:3000")
             socket.on(Socket.EVENT_CONNECT){
                 runOnUiThread {
                     Toast.makeText(this@MainActivity, "Connected", Toast.LENGTH_SHORT).show()
-                    btn_join_chat.text = socket.id()
+                    //btn_join_chat.text = socket.id()
                 }
             }
             socket.connect()
@@ -55,43 +46,13 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "" + e.message, Toast.LENGTH_SHORT).show()
         }
 
-
-        btn_send.setOnClickListener {
-            val message = edt_message.text.toString()
-            if(message != "") {
-                val json = JSONObject()
-                json.put("sender",edt_username.text.toString())
-                json.put("to",edt_to.text.toString())
-                json.put("message",message)
-                socket.emit("message",json)
-            } else {
-                Toast.makeText(this@MainActivity,"Write some text to send",Toast.LENGTH_SHORT).show()
-            }
-            edt_message.text.clear()
-        }
-
-        btn_join_chat.setOnClickListener{
-            if(edt_username.text.toString() != ""){
-
-                socket.emit("join_chat", edt_username.text.toString())
-
-                edt_to.visibility = EditText.VISIBLE
-                edt_message.visibility = EditText.VISIBLE
-                btn_send.visibility = Button.VISIBLE
-                txt_message.visibility = TextView.VISIBLE
-                btn_join_chat.visibility = Button.GONE
-
-                edt_username.keyListener = null
-            }
-        }
-
         socket.on("message"){
             args ->
             runOnUiThread {
                 //Toast.makeText(this@MainActivity, args[0].toString(), Toast.LENGTH_SHORT).show()
                 val response = JSONObject(args[0].toString())
-                val message = response.get("message")
-                val sender = response.get("sender")
+                val message = response.get("message").toString()
+                val sender = response.get("sender").toString()
                 val to = response.get("to")
                 val builder = StringBuilder()
                     .append(message)
@@ -99,19 +60,19 @@ class MainActivity : AppCompatActivity() {
                     .append(sender)
                     .append('\n')
                     .append(to)
-                txt_message.text = builder.toString()
+                customMessage(message,sender)
             }
         }
-         */
+
 
     }
 
-    private fun customMessage(message: String){
+    private fun customMessage(message: String,sender: String){
         GlobalScope.launch {
             delay(1000)
             withContext(Dispatchers.Main){
                 val timestamp = Time.timeStamp()
-                adapter.insertMessage(Message(message, RECEIVE_ID,timestamp))
+                adapter.insertMessage(Message(message, sender,timestamp))
 
                 rv_messages.scrollToPosition(adapter.itemCount - 1)
             }
@@ -136,6 +97,12 @@ class MainActivity : AppCompatActivity() {
 
             rv_messages.scrollToPosition(adapter.itemCount-1)
         }
+
+        val json = JSONObject()
+        json.put("sender",socket.id())
+        json.put("to","all")
+        json.put("message",message)
+        socket.emit("message",json)
     }
 
 }

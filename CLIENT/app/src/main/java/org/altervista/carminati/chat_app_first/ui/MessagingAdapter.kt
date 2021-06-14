@@ -37,15 +37,16 @@ class MessagingAdapter : RecyclerView.Adapter<MessagingAdapter.MessageViewHolder
             SEND_ID ->{
                 //todo: controllare implementazione koltin-android-extensions
                 holder.itemView.tv_message.apply{
-                    text = currentMessage.message
+                    tv_message.txt_tv_message.text = currentMessage.message
                     visibility = View.VISIBLE
                 }
                 holder.itemView.tv_bot_message.visibility = View.GONE
             }
 
-            RECEIVE_ID ->{
+            else -> {
                 holder.itemView.tv_bot_message.apply{
-                    text = currentMessage.message
+                    tv_bot_message.txt_tv_bot_message.text = currentMessage.message
+                    tv_bot_message.user_tv_bot_message.text = currentMessage.id
                     visibility = View.VISIBLE
                 }
                 holder.itemView.tv_message.visibility = View.GONE
@@ -60,7 +61,7 @@ class MessagingAdapter : RecyclerView.Adapter<MessagingAdapter.MessageViewHolder
 
     fun insertMessage(message: Message){
         this.messageList.add(message)
-        notifyItemInserted(messageList.size) //move to the bottom
+        notifyItemInserted(messageList.size)
         notifyDataSetChanged()
     }
 }
