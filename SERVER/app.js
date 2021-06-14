@@ -52,7 +52,7 @@ io.on('connection',(socket) => {
 
         //FIXME: to check
 
-        io.emit({sender:"server",to:"all",message:`user: ${socket.id} left the chat`})
+        io.emit('message',{sender:"server",to:"all",message:`user: ${socket.id} left the chat`})
 
         users.removeElement(element_me)
     })
