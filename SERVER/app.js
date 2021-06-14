@@ -23,6 +23,7 @@ io.on('connection',(socket) => {
 
     //io.to(socket.id).emit('message',{sender:"server",to:socket.id,message:"hello client"})
 
+    
     socket.on('join_chat', (username) => {
         element_me = new User(username,socket.id)
         users.add(element_me)
