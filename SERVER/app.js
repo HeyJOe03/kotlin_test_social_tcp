@@ -1,7 +1,7 @@
-const app = require('express')()
-const http = require('http').Server(app)
-const io = require('socket.io')(http)
-const ArrayList = require('arraylist')
+const app = require('express')()    //require and run express()
+const http = require('http').Server(app) //set http server
+const io = require('socket.io')(http) //io = socketio(http)
+const ArrayList = require('arraylist') //just for userfull functions over vectors
 
 class User{
     constructor(username,address){
@@ -10,26 +10,34 @@ class User{
     }
 }
 
-let users = new ArrayList()
+let users = new ArrayList() //array of Users
 
-app.get('/',(req,res) => {
+app.get('/',(req,res) => { //  http://192.168.x.x/
     res.sendFile('index.html',{root: __dirname + '/HTML'})
 })
 
-io.on('connection',(socket) => {
 
-    let element_me
-    console.log('new user has connected: ' + socket.id)
+/* 
+EVENTS:
+"message"
+"join_chat"
+*/
 
-    //io.to(socket.id).emit('message',{sender:"server",to:socket.id,message:"hello client"})
+io.on('connection',(socket) => { //when a user connect:
+
+    let element_me // Bitch variable, just to assign and create the new User
+    console.log('new user has connected: ' + socket.id) //write on console the socket of the user that has connected
+
+    //io.to(socket.id).emit('message',{sender:"server",to:socket.id,message:"hello client"}) //answer to the client "hello"
 
     socket.on('join_chat', (username) => {
-        element_me = new User(username,socket.id)
-        users.add(element_me)
+        element_me = new User(username,socket.id) //create the new User
+        users.add(element_me) //add the user to the list
 
         //TODO: aggiungere controllo sull'unicità dell'id
 
-        io.to(socket.id).emit('message',{"sender": "server","to":socket.id,"message":"your socket: " + socket.id})
+        let json_to_emit = {"sender": "server","to":socket.id,"message":"your socket: " + socket.id} //the user will be the only who this message will be sent to
+        io.to(socket.id).emit('message',json_to_emit)
     })
 
     socket.on('message', ({sender,to,message}) => {
@@ -37,11 +45,11 @@ io.on('connection',(socket) => {
 
         toSocket = users.find(e => {
             return e.username == to
-        })[0].address
+        })[0].address //toSocket = the address of the user that has the same socket as "to"
 
         console.log(toSocket)
 
-        io.to(toSocket).emit('message',{sender,to,message})
+        io.to(toSocket).emit('message',{sender,to,message}) //to send to a specific user
     })
 
     socket.on('disconnect', () => {
